@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Report of Checking Goods Received from Suppliers</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!-- Print-only top header -->
+    <div class="print-top" aria-hidden="true">
+      <div class="pt-left">
+        <div class="pt-row"><span class="lbl">Store location:</span> <span class="val" id="ptStore">—</span></div>
+        <div class="pt-row"><span class="lbl">Quality specialist:</span> <span class="val" id="ptQuality">—</span></div>
+        <div class="pt-row"><span class="lbl">Date:</span> <span class="val" id="ptDate">—</span></div>
+      </div>
+      <div class="pt-center">
+        <div class="pt-title">Daily report of checking goods received from suppliers</div>
+      </div>
+      <div class="pt-right">
+        <div>Makhazem Alenayah</div>
+        <div>Quality section</div>
+      </div>
+    </div>
+    <!-- Header: Title -->
+    <header class="page-header">
+      <h1>Daily Report of Checking Goods Received from Suppliers</h1>
+      <p class="subhead">Makhazem Alenayah — Quality Section</p>
+    </header>
+
+    <!-- Toolbar: Actions -->
+    <nav class="toolbar" aria-label="Top toolbar">
+      <button id="btnSave" class="btn btn-save" type="button">Save</button>
+      <button id="btnGenerate" class="btn btn-generate" type="button">Generate</button>
+      <button id="btnClear" class="btn btn-clear" type="button">Clear All</button>
+      <button id="btnPrint" class="btn btn-print" type="button">Print</button>
+      <button id="btnPagePlus" class="btn btn-page" type="button">Page +</button>
+      <button id="btnReset" class="btn btn-reset" type="button">Reset</button>
+      <button id="btnBackup" class="btn btn-backup" type="button">Backup</button>
+      <button id="btnRestore" class="btn btn-restore" type="button">Restore</button>
+      <button id="btnManageSuppliers" class="btn btn-manage" type="button">Manage Suppliers</button>
+      <input id="fileRestore" type="file" accept="application/json" class="sr-only" />
+    </nav>
+
+    <!-- Main card container -->
+    <main class="card">
+      <!-- Top meta fields -->
+      <section class="meta">
+        <div class="field">
+          <label for="date">Date</label>
+          <input id="date" name="date" type="date" />
+        </div>
+        <div class="field">
+          <label for="storeLocation">Store location</label>
+          <input id="storeLocation" name="storeLocation" type="text" placeholder="Enter location" />
+        </div>
+        <div class="field">
+          <label for="qualitySpecialist">Quality specialist</label>
+          <input id="qualitySpecialist" name="qualitySpecialist" type="text" placeholder="Enter name" />
+        </div>
+      </section>
+
+      <!-- Data table -->
+      <section class="table-wrapper">
+        <table id="reportTable" aria-label="Goods received report table">
+          <caption class="print-only page-caption" aria-hidden="true" id="ptPage">Page 1</caption>
+          <thead>
+            <tr>
+              <th rowspan="2" class="col-sticky">No.</th>
+              <th colspan="2">Supplier</th>
+              <th colspan="3">Invoice</th>
+              <th colspan="10">Notes</th>
+            </tr>
+            <tr>
+              <th>Name</th>
+              <th>Code</th>
+              <th>Invoice number</th>
+              <th>Items</th>
+              <th>Qty</th>
+              <th colspan="2">Exp</th>
+              <th colspan="2">Damage</th>
+              <th colspan="2">Shortage quantity</th>
+              <th colspan="2">Arabic language</th>
+              <th colspan="2">Others</th>
+            </tr>
+            <tr class="subhead">
+              <th class="sr-only">No.</th>
+              <th class="sub">Name</th>
+              <th class="sub">Code</th>
+              <th class="sub">Number</th>
+              <th class="sub">Items</th>
+              <th class="sub">Qty</th>
+              <th class="sub">Items</th>
+              <th class="sub">Qty</th>
+              <th class="sub">Items</th>
+              <th class="sub">Qty</th>
+              <th class="sub">Items</th>
+              <th class="sub">Qty</th>
+              <th class="sub">Items</th>
+              <th class="sub">Qty</th>
+              <th class="sub">Items</th>
+              <th class="sub">Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- 12 editable rows -->
+            <!-- Each td (except the No.) is contenteditable for inline entry -->
+            
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Signature area for print -->
+      <section class="signature" aria-label="Signature area">
+        <div class="sig-line"></div>
+        <div class="sig-label">Signature</div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="page-footer">
+        <div class="footer-left">Makhazen Alenayah — Quality Section</div>
+        <div class="footer-right" id="pageIndicator"> 1</div>
+      </footer>
+      <div id="pageBadge" class="page-badge" aria-hidden="true">Page 1</div>
+    </main>
+
+    <!-- Print-right rail (visible only in print) -->
+    <div class="print-rail" aria-hidden="true">
+      <div class="rail-group rail-meta">
+        <div class="rail-row"><span class="lbl">Date:</span> <span id="railDate" class="val">—</span></div>
+        <div class="rail-row"><span class="lbl">Store location:</span> <span id="railStore" class="val">—</span></div>
+        <div class="rail-row"><span class="lbl">Quality specialist:</span> <span id="railQuality" class="val">—</span></div>
+      </div>
+      <div class="rail-spacer"></div>
+      <div class="rail-group">
+        <div class="rail-page" id="railPage">Page 1</div>
+      </div>
+      <div class="rail-title">Daily report of checking goods received from suppliers</div>
+      <div class="rail-footer">Makhazem Alenayah, Quality section</div>
+    </div>
+
+    <!-- Manage Suppliers Modal -->
+    <dialog id="suppliersModal" class="modal">
+      <form method="dialog" class="modal-content" id="suppliersForm">
+        <header class="modal-header">
+          <h2>Manage Suppliers</h2>
+        </header>
+        <div class="modal-body">
+          <div class="supplier-actions">
+            <input id="supplierName" type="text" placeholder="Supplier name" />
+            <input id="supplierCode" type="text" placeholder="Supplier code" />
+            <button id="addSupplier" type="button" class="btn btn-manage">Add</button>
+          </div>
+          <ul id="suppliersList" class="suppliers-list" aria-live="polite"></ul>
+        </div>
+        <footer class="modal-footer">
+          <button value="cancel" class="btn btn-reset" type="button" id="closeSuppliers">Close</button>
+          <button value="default" class="btn btn-save" type="button" id="saveSuppliers">Save</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <script src="./script.js"></script>
+  </body>
+  </html>
+
+
