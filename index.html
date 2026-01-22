@@ -1,170 +1,1172 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daily Report of Checking Goods Received from Suppliers</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-  </head>
-  <body>
-    <!-- Print-only top header -->
-    <div class="print-top" aria-hidden="true">
-      <div class="pt-left">
-        <div class="pt-row"><span class="lbl">Store location:</span> <span class="val" id="ptStore">—</span></div>
-        <div class="pt-row"><span class="lbl">Quality specialist:</span> <span class="val" id="ptQuality">—</span></div>
-        <div class="pt-row"><span class="lbl">Date:</span> <span class="val" id="ptDate">—</span></div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1024">
+  <title>Daily Report - Checking Goods</title>
+
+  <!-- Bootstrap CSS + Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Reem+Kufi+Fun:wght@400..700&display=swap');
+  </style>
+  <style>
+    /* ===== General & Background ===== */
+    body {
+      font-size: 12px;
+      margin: 0;
+      padding: 10px;
+      /* glass-friendly background (not printed) */
+      background: linear-gradient(135deg, #dce9f9 0%, #f0f4fa 100%);
+      min-height: 100vh;
+    }
+
+    /* ===== Glassmorphism Toolbar ===== */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.35);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      padding: 10px;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+      color: rgba(0, 0, 0, .7);
+    }
+
+    .muted-hint {
+      font-size: 12px;
+      color: rgba(0, 0, 0, .6);
+    }
+
+    /* toolbar buttons */
+    .glass-card .btn {
+      font-size: 12px;
+      font-weight: 600;
+      transition: all .18s ease;
+    }
+
+    .glass-card .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    /* ===== Table (kept white for readability & printing) ===== */
+    table {
+      border: 1px solid #000;
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #fff;
+      page-break-inside: avoid;
+      font-size: 12px;
+    }
+
+    table th,
+    table td {
+      border: 1px solid #000 !important;
+      text-align: center;
+      vertical-align: middle;
+      word-break: break-word;
+    }
+
+    table th {
+      background-color: #a0a0a0 !important;
+      font-weight: bold;
+    }
+
+    table td {
+      font-weight: 600 !important;
+      padding: 9.5px 3px !important;
+    }
+
+    table input {
+      width: 100%;
+      border: none;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 2px;
+      background-color: transparent;
+    }
+
+    /* Small inputs (header toolbar) */
+    .no-print .input-group-text {
+      background: rgba(255, 255, 255, 0.65);
+      border-color: rgba(0, 0, 0, 0.12);
+      font-weight: 700;
+    }
+
+    .no-print .form-control {
+      border-color: rgba(0, 0, 0, 0.12);
+      font-weight: 600;
+    }
+
+    .no-print .form-control:focus {
+      box-shadow: 0 0 0 .2rem rgba(13, 110, 253, 0.15);
+      border-color: rgba(13, 110, 253, 0.35);
+    }
+
+    /* Saved report supplier preview pills */
+    .pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: rgba(13, 110, 253, 0.08);
+      border: 1px solid rgba(13, 110, 253, 0.15);
+      font-size: 12px;
+      font-weight: 700;
+      margin: 0 4px 4px 0;
+      white-space: nowrap;
+    }
+
+    .pill.secondary {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.08);
+      font-weight: 700;
+    }
+
+    /* ===== Column widths ===== */
+    .col-no {
+      width: 30px;
+    }
+
+    .col-name {
+      width: 160px;
+    }
+
+    .col-code {
+      width: 105px;
+    }
+
+    .col-invoice {
+      width: 140px;
+    }
+
+    .col-items {
+      width: 70px;
+    }
+
+    .col-qty {
+      width: 50px;
+    }
+
+    .col-qty-5 {
+      width: 90px;
+    }
+
+    .col-qty-wider {
+      width: 80px;
+    }
+
+    /* ===== Header, signature & misc ===== */
+    .header-info p {
+      font-weight: bold;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .header-info span[contenteditable] {
+      border-bottom: 1px dotted #000;
+      padding: 0 2px;
+      min-width: 50px;
+      display: inline-block;
+    }
+
+    .signature {
+      margin-top: 28px;
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      font-size: 14px;
+    }
+
+    .signature span {
+      border-top: 1px solid #000;
+      padding-top: 5px;
+      display: inline-block;
+      min-width: 180px;
+      text-align: center;
+    }
+
+    .page-number {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .no-print {
+      margin: 10px 0;
+    }
+
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* autocomplete list */
+    .autocomplete-list {
+      position: absolute;
+      border: 1px solid #ccc;
+      background: #fff;
+      z-index: 1000;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    /* Admin panel glass look */
+    #adminPanel {
+      background: rgba(255, 255, 255, 0.5);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.45);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+      padding: 12px;
+    }
+
+    /* ===== Print rules ===== */
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 5mm;
+        margin-top: 42px;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        /* ensure print is purely white */
+        background-color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      /* hide UI-only elements when printing */
+      .no-print,
+      .glass-card {
+        display: none !important;
+      }
+
+      /* hide the data-entry table (we print combinedReports instead) */
+      #entrySection {
+        display: none !important;
+      }
+
+      table,
+      th,
+      td {
+        background: #fff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      tr {
+        page-break-inside: avoid;
+      }
+
+      table input {
+        display: none;
+      }
+
+      .with-dash td:empty::after {
+        content: "-";
+        display: block;
+      }
+
+      .flag-top-right {
+        display: none;
+      }
+
+      /* Force all elements to have white background */
+      * {
+        background-color: #ffffff !important;
+        background: #ffffff !important;
+      }
+
+      #combinedReports>div:last-child .page-break {
+        display: none !important;
+      }
+    }
+
+    /* Pakistan flag top-right */
+    .flag-top-right {
+      position: fixed;
+      top: -3px;
+      right: 15px;
+      width: 100px;
+      /* adjust size */
+      height: auto;
+      z-index: 9999;
+      margin-top: -15px;
+      pointer-events: none;
+      /* prevents blocking clicks below */
+    }
+
+    .header-info .specialistNamePlaceholder {
+      margin-top: 8px !important;
+    }
+
+    .header-info #specialistNamePlaceholder {
+      margin-left: 8px !important;
+      font-size: 14px;
+    }
+
+    .header-info .editableStore {
+      margin-top: 8px !important;
+    }
+
+    .header-info #editableStore {
+      margin-left: 8px !important;
+      font-size: 19px;
+      font-family: "Reem Kufi Fun", sans-serif;
+      font-optical-sizing: auto;
+      font-weight: bold;
+      font-style: nl;
+    }
+
+
+    img {
+      width: 280px;
+      height: 290px;
+      border: none;
+      opacity: 1;
+      transition: opacity 1.5s ease-in-out;
+    }
+  </style>
+</head>
+
+<body>
+  <!--<img src="/wao-removebg-preview.png" alt="Pakistan Flag" class="flag-top-right">-->
+  <div class="no-print">
+    <img id="flag" src="wao-removebg-preview.png" alt="Flag" class="flag-top-right">
+  </div>
+  <script>
+    const flag = document.getElementById("flag");
+    const flags = [
+      "wao-removebg-preview.png",  // your Pakistan flag
+      "logo-removebg-preview.png"   // your Makhazen flag
+    ];
+    let current = 0;
+
+    function switchFlag() {
+      // Fade out
+      flag.style.opacity = 0;
+
+      setTimeout(() => {
+        // Change the flag after fade-out
+        current = (current + 1) % flags.length;
+        flag.src = flags[current];
+
+        // Fade back in
+        flag.style.opacity = 1;
+      }, 2000); // matches CSS transition duration
+    }
+
+    // Switch every 5 minutes (300,000 ms)
+    setInterval(switchFlag, 1 * 60 * 1000);
+  </script>
+  <div class="container-fluid">
+
+    <!-- ===== Glass Toolbar (actions) ===== -->
+    <div class="glass-card no-print mb-3 d-flex flex-wrap align-items-center gap-2 justify-content-start">
+      <div class="btn-group">
+        <button class="btn btn-success" id="saveBtn" onclick="saveSpecialist()"><i class="bi bi-save"></i> Save</button>
+        <button class="btn btn-primary" onclick="generateCombinedReport()"><i class="bi bi-file-earmark-richtext"></i>
+          Generate</button>
+        <button class="btn btn-danger" onclick="clearAllSpecialists()"><i class="bi bi-trash"></i> Clear All</button>
       </div>
-      <div class="pt-center">
-        <div class="pt-title">Daily report of checking goods received from suppliers</div>
+
+      <div class="d-flex align-items-center gap-2 ms-2 flex-wrap">
+        <div class="input-group input-group-sm" style="width: 210px;">
+          <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+          <input id="reportDateInput" type="date" class="form-control" aria-label="Report date">
+        </div>
+        <div class="input-group input-group-sm" style="width: 260px;">
+          <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+          <input id="specialistNameInput" type="text" class="form-control" placeholder="Quality specialist name"
+            aria-label="Quality specialist name">
+        </div>
+        <div class="input-group input-group-sm" style="width: 200px;">
+          <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+          <input id="storeInput" type="text" class="form-control" value="جدة" aria-label="Store location">
+        </div>
       </div>
-      <div class="pt-right">
-        <div>Makhazem Alenayah</div>
-        <div>Quality section</div>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-warning" onclick="nextSet()"><i class="bi bi-plus-square"></i> Page +</button>
+        <button class="btn btn-info" onclick="resetNumbers()"><i class="bi bi-arrow-repeat"></i> Reset</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-outline-dark" onclick="backupSuppliers()"><i class="bi bi-cloud-download"></i>
+          Backup</button>
+        <input type="file" id="restoreFile" style="display:none" onchange="restoreSuppliers(event)">
+        <button class="btn btn-outline-secondary" onclick="document.getElementById('restoreFile').click()"><i
+            class="bi bi-cloud-upload"></i> Restore</button>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn btn-outline-info" onclick="toggleAdminPanel()"><i class="bi bi-people"></i> Manage
+          Suppliers</button>
       </div>
     </div>
-    <!-- Header: Title -->
-    <header class="page-header">
-      <h1>Daily Report of Checking Goods Received from Suppliers</h1>
-      <p class="subhead">Makhazem Alenayah — Quality Section</p>
-    </header>
 
-    <!-- Toolbar: Actions -->
-    <nav class="toolbar" aria-label="Top toolbar">
-      <button id="btnSave" class="btn btn-save" type="button">Save</button>
-      <button id="btnGenerate" class="btn btn-generate" type="button">Generate</button>
-      <button id="btnClear" class="btn btn-clear" type="button">Clear All</button>
-      <button id="btnPrint" class="btn btn-print" type="button">Print</button>
-      <button id="btnPagePlus" class="btn btn-page" type="button">Page +</button>
-      <button id="btnReset" class="btn btn-reset" type="button">Reset</button>
-      <button id="btnBackup" class="btn btn-backup" type="button">Backup</button>
-      <button id="btnRestore" class="btn btn-restore" type="button">Restore</button>
-      <button id="btnManageSuppliers" class="btn btn-manage" type="button">Manage Suppliers</button>
-      <input id="fileRestore" type="file" accept="application/json" class="sr-only" />
-    </nav>
-
-    <!-- Main card container -->
-    <main class="card">
-      <!-- Top meta fields -->
-      <section class="meta">
-        <div class="field">
-          <label for="date">Date</label>
-          <input id="date" name="date" type="date" />
-        </div>
-        <div class="field">
-          <label for="storeLocation">Store location</label>
-          <input id="storeLocation" name="storeLocation" type="text" placeholder="Enter location" />
-        </div>
-        <div class="field">
-          <label for="qualitySpecialist">Quality specialist</label>
-          <input id="qualitySpecialist" name="qualitySpecialist" type="text" placeholder="Enter name" />
-        </div>
-      </section>
-
-      <!-- Data table -->
-      <section class="table-wrapper">
-        <table id="reportTable" aria-label="Goods received report table">
-          <caption class="print-only page-caption" aria-hidden="true" id="ptPage">Page 1</caption>
+    <!-- ===== Admin Panel (hidden by default) ===== -->
+    <div class="no-print">
+      <div id="adminPanel" style="display:none; margin-top:10px;">
+        <h6 class="fw-bold mb-2">Saved Suppliers</h6>
+        <table class="table table-sm table-bordered mb-0">
           <thead>
-            <tr>
-              <th rowspan="2" class="col-sticky">No.</th>
-              <th colspan="2">Supplier</th>
-              <th colspan="3">Invoice</th>
-              <th colspan="10">Notes</th>
-            </tr>
             <tr>
               <th>Name</th>
               <th>Code</th>
-              <th>Invoice number</th>
-              <th>Items</th>
-              <th>Qty</th>
-              <th colspan="2">Exp</th>
-              <th colspan="2">Damage</th>
-              <th colspan="2">Shortage quantity</th>
-              <th colspan="2">Arabic language</th>
-              <th colspan="2">Others</th>
-            </tr>
-            <tr class="subhead">
-              <th class="sr-only">No.</th>
-              <th class="sub">Name</th>
-              <th class="sub">Code</th>
-              <th class="sub">Number</th>
-              <th class="sub">Items</th>
-              <th class="sub">Qty</th>
-              <th class="sub">Items</th>
-              <th class="sub">Qty</th>
-              <th class="sub">Items</th>
-              <th class="sub">Qty</th>
-              <th class="sub">Items</th>
-              <th class="sub">Qty</th>
-              <th class="sub">Items</th>
-              <th class="sub">Qty</th>
-              <th class="sub">Items</th>
-              <th class="sub">Qty</th>
+              <th>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            <!-- 12 editable rows -->
-            <!-- Each td (except the No.) is contenteditable for inline entry -->
-            
-          </tbody>
+          <tbody id="adminTableBody"></tbody>
         </table>
-      </section>
-
-      <!-- Signature area for print -->
-      <section class="signature" aria-label="Signature area">
-        <div class="sig-line"></div>
-        <div class="sig-label">Signature</div>
-      </section>
-
-      <!-- Footer -->
-      <footer class="page-footer">
-        <div class="footer-left">Makhazen Alenayah — Quality Section</div>
-        <div class="footer-right" id="pageIndicator"> 1</div>
-      </footer>
-      <div id="pageBadge" class="page-badge" aria-hidden="true">Page 1</div>
-    </main>
-
-    <!-- Print-right rail (visible only in print) -->
-    <div class="print-rail" aria-hidden="true">
-      <div class="rail-group rail-meta">
-        <div class="rail-row"><span class="lbl">Date:</span> <span id="railDate" class="val">—</span></div>
-        <div class="rail-row"><span class="lbl">Store location:</span> <span id="railStore" class="val">—</span></div>
-        <div class="rail-row"><span class="lbl">Quality specialist:</span> <span id="railQuality" class="val">—</span></div>
       </div>
-      <div class="rail-spacer"></div>
-      <div class="rail-group">
-        <div class="rail-page" id="railPage">Page 1</div>
-      </div>
-      <div class="rail-title">Daily report of checking goods received from suppliers</div>
-      <div class="rail-footer">Makhazem Alenayah, Quality section</div>
     </div>
 
-    <!-- Manage Suppliers Modal -->
-    <dialog id="suppliersModal" class="modal">
-      <form method="dialog" class="modal-content" id="suppliersForm">
-        <header class="modal-header">
-          <h2>Manage Suppliers</h2>
-        </header>
-        <div class="modal-body">
-          <div class="supplier-actions">
-            <input id="supplierName" type="text" placeholder="Supplier name" />
-            <input id="supplierCode" type="text" placeholder="Supplier code" />
-            <button id="addSupplier" type="button" class="btn btn-manage">Add</button>
+    <!-- ===== Saved Reports (always visible) ===== -->
+    <div class="no-print mt-3">
+      <div class="glass-card">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div>
+              <div class="section-title">Saved Reports</div>
+              <div class="muted-hint">Saved locally in your browser (date + supplier details + specialist).</div>
+            </div>
+            <span class="text-muted" style="font-size:12px;" id="savedReportsCount">0</span>
           </div>
-          <ul id="suppliersList" class="suppliers-list" aria-live="polite"></ul>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="input-group input-group-sm" style="width: 260px;">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input id="reportSearchInput" type="text" class="form-control"
+                placeholder="Search by supplier/date/specialist">
+            </div>
+            <button class="btn btn-sm btn-outline-dark" onclick="exportReports()"><i class="bi bi-download"></i>
+              Export</button>
+            <input type="file" id="importReportsFile" style="display:none" onchange="importReports(event)">
+            <button class="btn btn-sm btn-outline-secondary"
+              onclick="document.getElementById('importReportsFile').click()">
+              <i class="bi bi-upload"></i> Import
+            </button>
+          </div>
         </div>
-        <footer class="modal-footer">
-          <button value="cancel" class="btn btn-reset" type="button" id="closeSuppliers">Close</button>
-          <button value="default" class="btn btn-save" type="button" id="saveSuppliers">Save</button>
-        </footer>
-      </form>
-    </dialog>
+        <div class="table-responsive mt-2">
+          <table class="table table-sm table-bordered mb-0 align-middle">
+            <thead>
+              <tr>
+                <th style="width:160px;">Date</th>
+                <th style="width:140px;">Store</th>
+                <th style="width:220px;">Specialist</th>
+                <th>Suppliers (preview)</th>
+                <th style="width:170px;">Saved</th>
+                <th style="width:170px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="reportsTableBody"></tbody>
+          </table>
+          <div id="reportsEmptyState" class="text-center py-4" style="display:none;">
+            <div class="fw-bold">No saved reports yet</div>
+            <div class="text-muted" style="font-size:12px;">Fill the header fields, enter suppliers, then press
+              <b>Save</b>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ===== Header ===== -->
+    <div class="no-print">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <div class="header-info">
+          <p>Date : <span id="editableDate" contenteditable="true"></span></p>
+          <p class="editableStore">Store location : <span id="editableStore" contenteditable="true">جدة</span></p>
+          <p class="specialistNamePlaceholder">Quality specialist : <span id="specialistNamePlaceholder">—</span></p>
+        </div>
 
-    <script src="./script.js"></script>
-  </body>
-  </html>
+        <div class="text-center flex-grow-1">
+          <h6 class="fw-bold text-decoration-underline" style="font-size:13px; margin-top:10px;">
+            Daily report of checking goods received from suppliers
+          </h6>
+        </div>
 
+        <div class="text-end header-info">
+          <p>Makhazen Alenayah</p>
+          <p>Quality section</p>
+        </div>
+      </div>
 
+      <div id="setInfo" class="page-number">Page 1</div>
+    </div>
+
+    <!-- ===== Report Table (editable) ===== -->
+    <div class="table-responsive" id="entrySection">
+      <table class="table table-bordered table-sm" id="reportTable">
+        <thead>
+          <tr>
+            <th rowspan="3" class="col-no">No.</th>
+            <th colspan="2">Supplier</th>
+            <th colspan="3">Invoice</th>
+            <th colspan="10">Notes</th>
+          </tr>
+          <tr>
+            <th rowspan="2" class="col-name">Name</th>
+            <th rowspan="2" class="col-code">Code</th>
+            <th rowspan="2" class="col-invoice">Invoice number</th>
+            <th rowspan="2" class="col-items">Items</th>
+            <th rowspan="2" class="col-qty-5">Qty.</th>
+            <th colspan="2" class="col-items">Exp.</th>
+            <th colspan="2" class="col-items">Damage</th>
+            <th colspan="2" class="col-items">Shortage in quantity</th>
+            <th colspan="2" class="col-items">Arabic language</th>
+            <th colspan="2" class="col-items">Others</th>
+          </tr>
+          <tr>
+            <th class="col-items">Items</th>
+            <th class="col-qty">Qty.</th>
+            <th class="col-items">Items</th>
+            <th class="col-qty">Qty.</th>
+            <th class="col-items">Items</th>
+            <th class="col-qty">Qty.</th>
+            <th class="col-items">Items</th>
+            <th class="col-qty">Qty.</th>
+            <th class="col-items">Items</th>
+            <th class="col-qty-wider">Qty.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <script>
+            // generate 12 editable rows (keeps same structure as original)
+            for (let i = 1; i <= 12; i++) {
+              document.write('<tr>' +
+                '<td>' + i + '</td>' +
+                '<td><input type="text" oninput="showSuggestions(this, \'name\')" onblur="autoFillFromNameOnBlur(this)"></td>' +
+                '<td><input type="number" oninput="showSuggestions(this, \'code\')" onblur="autoFillFromCodeOnBlur(this)"></td>' +
+                '<td><input type="text"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="number"></td>' +
+                '<td><input type="text"></td>' +
+                '</tr>');
+            }
+          </script>
+        </tbody>
+      </table>
+    </div>
+
+    <div id="combinedReports"></div>
+
+    <!-- ===== JavaScript: pagination, suppliers, suggestions, backup/restore, save/generate, keyboard nav ===== -->
+    <script>
+      /* -------------------- Initialization & Pagination -------------------- */
+      let currentSet = 0;
+      const editableDate = document.getElementById("editableDate");
+
+      const reportDateInput = document.getElementById("reportDateInput");
+      const specialistNameInput = document.getElementById("specialistNameInput");
+      const storeInput = document.getElementById("storeInput");
+
+      function pad2(n) { return String(n).padStart(2, "0"); }
+      function toISODate(d) { return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`; }
+      function formatHumanDateFromISO(iso) {
+        if (!iso) return "";
+        const [y, m, d] = iso.split("-").map(Number);
+        const dt = new Date(y, (m || 1) - 1, d || 1);
+        return `${dt.getDate()} ${dt.toLocaleString('default', { month: 'long' })} ${dt.getFullYear()}`;
+      }
+
+      // Initialize header fields (professional + consistent)
+      const now = new Date();
+      reportDateInput.value = toISODate(now);
+      editableDate.innerText = formatHumanDateFromISO(reportDateInput.value);
+      storeInput.value = (document.getElementById("editableStore").innerText || "جدة").trim();
+
+      reportDateInput.addEventListener("change", () => {
+        editableDate.innerText = formatHumanDateFromISO(reportDateInput.value);
+      });
+
+      specialistNameInput.addEventListener("input", () => {
+        document.getElementById("specialistNamePlaceholder").innerText = specialistNameInput.value.trim() || "—";
+      });
+
+      storeInput.addEventListener("input", () => {
+        document.getElementById("editableStore").innerText = storeInput.value.trim() || "";
+      });
+
+      function updateNumbers() {
+        document.querySelectorAll("#reportTable tbody tr").forEach((row, index) => {
+          row.cells[0].innerText = index + 1 + (currentSet * 12);
+        });
+        document.getElementById("setInfo").innerText = `Page ${currentSet + 1}`;
+      }
+      function nextSet() { currentSet++; updateNumbers(); }
+      function resetNumbers() { currentSet = 0; updateNumbers(); }
+      function clearTable() { document.querySelectorAll("#reportTable tbody tr input").forEach(i => i.value = ""); }
+
+      /* -------------------- SUPPLIERS STORAGE -------------------- */
+      let suppliers = JSON.parse(localStorage.getItem("suppliers")) || {}; // code -> name
+
+      // Seed/merge suppliers from supplier.json (if present) for a more professional out-of-box experience.
+      // This does not overwrite existing localStorage suppliers unless keys are missing.
+      fetch("supplier.json")
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+          if (!data || typeof data !== "object" || Array.isArray(data)) return;
+          let changed = false;
+          Object.entries(data).forEach(([code, name]) => {
+            if (!suppliers[code] && name) {
+              suppliers[code] = String(name);
+              changed = true;
+            }
+          });
+          if (changed) localStorage.setItem("suppliers", JSON.stringify(suppliers));
+          refreshAdminPanel();
+        })
+        .catch(() => { /* ignore if file missing */ });
+
+      // Save supplier pair (called when either name/code blurred or when selecting suggestion)
+      function saveSupplierPair(input) {
+        const row = input.closest("tr");
+        const name = row.cells[1].querySelector("input").value.trim();
+        const code = row.cells[2].querySelector("input").value.trim();
+        if (name && code) {
+          suppliers[code] = name;
+          localStorage.setItem("suppliers", JSON.stringify(suppliers));
+          refreshAdminPanel();
+        }
+      }
+
+      // Autofill on blur: name -> code
+      function autoFillFromNameOnBlur(input) {
+        const row = input.closest("tr");
+        const name = input.value.trim();
+        const codeInput = row.cells[2].querySelector("input");
+        const found = Object.entries(suppliers).find(([c, n]) => n.toLowerCase() === name.toLowerCase());
+        if (found) codeInput.value = found[0]; // exact match only
+        saveSupplierPair(input);
+      }
+
+      // Autofill on blur: code -> name
+      function autoFillFromCodeOnBlur(input) {
+        const row = input.closest("tr");
+        const code = input.value.trim();
+        const nameInput = row.cells[1].querySelector("input");
+        if (suppliers[code]) nameInput.value = suppliers[code];
+        saveSupplierPair(input);
+      }
+
+      /* -------------------- SUGGESTIONS (autocomplete) -------------------- */
+      function showSuggestions(input, type) {
+        closeSuggestions();
+        const value = input.value.trim().toLowerCase();
+        if (!value) return;
+
+        let matches = [];
+        if (type === 'name') {
+          matches = Object.values(suppliers).filter(n => n.toLowerCase().includes(value));
+        } else if (type === 'code') {
+          matches = Object.keys(suppliers).filter(c => c.startsWith(value));
+        }
+        if (!matches.length) return;
+
+        const list = document.createElement("div");
+        list.className = "autocomplete-list";
+        Object.assign(list.style, {
+          position: "absolute", border: "1px solid #ccc",
+          background: "#fff", zIndex: 1000, maxHeight: "150px",
+          overflowY: "auto", width: input.offsetWidth + "px"
+        });
+
+        matches.forEach(item => {
+          const option = document.createElement("div");
+          if (type === 'name') {
+            const code = Object.entries(suppliers).find(([c, n]) => n === item)[0];
+            option.textContent = `${item} (${code})`;
+          } else {
+            option.textContent = `${item} (${suppliers[item]})`;
+          }
+          option.style.padding = "6px 8px"; option.style.cursor = "pointer";
+          option.onmousedown = () => {
+            const row = input.closest("tr");
+            if (type === 'name') {
+              const code = Object.entries(suppliers).find(([c, n]) => n === item)[0];
+              row.cells[1].querySelector("input").value = item;
+              row.cells[2].querySelector("input").value = code;
+            } else {
+              row.cells[2].querySelector("input").value = item;
+              row.cells[1].querySelector("input").value = suppliers[item];
+            }
+            saveSupplierPair(input);
+            closeSuggestions();
+          };
+          list.appendChild(option);
+        });
+
+        // attach to cell so absolute positioning is relative to td
+        const td = input.closest('td');
+        td.style.position = 'relative';
+        td.appendChild(list);
+      }
+
+      function closeSuggestions() { document.querySelectorAll(".autocomplete-list").forEach(el => el.remove()); }
+      document.addEventListener("click", closeSuggestions);
+
+      /* -------------------- ADMIN PANEL -------------------- */
+      function toggleAdminPanel() {
+        const panel = document.getElementById("adminPanel");
+        panel.style.display = panel.style.display === "none" ? "block" : "none";
+        refreshAdminPanel();
+      }
+
+      function refreshAdminPanel() {
+        const tbody = document.getElementById("adminTableBody");
+        tbody.innerHTML = "";
+        Object.entries(suppliers).forEach(([code, name]) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${name}</td><td>${code}</td>
+            <td><button class="btn btn-sm btn-danger" onclick="deleteSupplier('${code}')">Delete</button></td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      function deleteSupplier(code) {
+        if (confirm("Delete supplier with code: " + code + "?")) {
+          delete suppliers[code];
+          localStorage.setItem("suppliers", JSON.stringify(suppliers));
+          refreshAdminPanel();
+        }
+      }
+
+      /* -------------------- BACKUP & RESTORE -------------------- */
+      function backupSuppliers() {
+        const data = JSON.stringify(suppliers);
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = "suppliers-backup.json"; a.click();
+        URL.revokeObjectURL(url); alert("Suppliers backup downloaded!");
+      }
+
+      function restoreSuppliers(event) {
+        const file = event.target.files[0]; if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          try {
+            const imported = JSON.parse(e.target.result);
+            if (typeof imported === "object" && !Array.isArray(imported)) {
+              suppliers = imported;
+              localStorage.setItem("suppliers", JSON.stringify(suppliers));
+              refreshAdminPanel();
+              alert("Suppliers restored!");
+            } else alert("Invalid file!");
+          } catch { alert("Error reading file!"); }
+        };
+        reader.readAsText(file);
+      }
+
+      /* -------------------- Toast UX (professional feedback) -------------------- */
+      let toastInstance = null;
+      function showToast(message) {
+        const el = document.getElementById("appToast");
+        const body = document.getElementById("appToastBody");
+        if (!el || !body) return;
+        body.textContent = message;
+        if (!toastInstance) toastInstance = bootstrap.Toast.getOrCreateInstance(el, { delay: 2600 });
+        toastInstance.show();
+      }
+
+      /* -------------------- REPORT STORAGE (professional save/load) -------------------- */
+      function getStoredReports() {
+        return JSON.parse(localStorage.getItem("specialistsData")) || [];
+      }
+      function setStoredReports(reports) {
+        localStorage.setItem("specialistsData", JSON.stringify(reports));
+        refreshReportsTable();
+      }
+      function uid() {
+        // readable + sortable id
+        return `R-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
+      }
+
+      function serializeCurrentTable() {
+        const rows = document.querySelectorAll("#reportTable tbody tr");
+        const numbers = [];
+        const suppliersRows = [];
+
+        rows.forEach(row => {
+          const inputs = Array.from(row.querySelectorAll("input")).map(i => i.value.trim());
+          // inputs order matches tbody generation:
+          // 0 name, 1 code, 2 invoice, 3 items, 4 qty, 5 expItems, 6 expQty, 7 dmgItems, 8 dmgQty,
+          // 9 shortItems, 10 shortQty, 11 arabicItems, 12 arabicQty, 13 othersQty, 14 othersText
+          const rowObj = {
+            supplierName: inputs[0] || "",
+            supplierCode: inputs[1] || "",
+            invoiceNumber: inputs[2] || "",
+            invoiceItems: inputs[3] || "",
+            invoiceQty: inputs[4] || "",
+            expItems: inputs[5] || "",
+            expQty: inputs[6] || "",
+            damageItems: inputs[7] || "",
+            damageQty: inputs[8] || "",
+            shortageItems: inputs[9] || "",
+            shortageQty: inputs[10] || "",
+            arabicItems: inputs[11] || "",
+            arabicQty: inputs[12] || "",
+            othersQty: inputs[13] || "",
+            othersNotes: inputs[14] || ""
+          };
+          suppliersRows.push(rowObj);
+          numbers.push(row.cells[0].innerText);
+        });
+        return { suppliersRows, numbers };
+      }
+
+      function saveSpecialist() {
+        const reportISODate = reportDateInput.value;
+        const specialistName = specialistNameInput.value.trim();
+        const storeName = storeInput.value.trim();
+        if (!reportISODate) { showToast("Please select a date."); return; }
+        if (!specialistName) { showToast("Please enter the quality specialist name."); specialistNameInput.focus(); return; }
+        if (!storeName) { showToast("Please enter the store location."); storeInput.focus(); return; }
+
+        const { suppliersRows, numbers } = serializeCurrentTable();
+        const hasAnyData = suppliersRows.some(r => Object.values(r).some(v => String(v).trim() !== ""));
+        if (!hasAnyData) { showToast("Enter at least one supplier / invoice row."); return; }
+
+        document.getElementById("specialistNamePlaceholder").innerText = specialistName;
+        editableDate.innerText = formatHumanDateFromISO(reportISODate);
+        document.getElementById("editableStore").innerText = storeName;
+
+        const createdAt = new Date().toISOString();
+        const report = {
+          id: uid(),
+          dateISO: reportISODate,
+          date: formatHumanDateFromISO(reportISODate), // kept for existing print layout
+          store: storeName,
+          name: specialistName,
+          page: currentSet + 1,
+          createdAt,
+          numbers,
+          suppliers: suppliersRows
+        };
+
+        try {
+          const storedData = getStoredReports();
+          storedData.push(report);
+          setStoredReports(storedData);
+        } catch (e) {
+          showToast("Could not save (storage full). Try Export, then Clear All.");
+          return;
+        }
+
+        showToast(`Saved: ${specialistName} • ${report.date}`);
+        clearTable();
+        resetNumbers();
+      }
+
+      function loadReport(reportId) {
+        const reports = getStoredReports();
+        const report = reports.find(r => r.id === reportId);
+        if (!report) { showToast("Report not found."); return; }
+
+        reportDateInput.value = report.dateISO || "";
+        editableDate.innerText = report.date || formatHumanDateFromISO(report.dateISO);
+        storeInput.value = report.store || "";
+        document.getElementById("editableStore").innerText = report.store || "";
+
+        specialistNameInput.value = report.name || "";
+        document.getElementById("specialistNamePlaceholder").innerText = report.name || "—";
+
+        // set page
+        currentSet = Math.max(0, (report.page || 1) - 1);
+        updateNumbers();
+
+        // write table rows
+        const tbodyRows = Array.from(document.querySelectorAll("#reportTable tbody tr"));
+        tbodyRows.forEach((tr, idx) => {
+          const r = (report.suppliers || [])[idx] || {};
+          const values = [
+            r.supplierName, r.supplierCode, r.invoiceNumber, r.invoiceItems, r.invoiceQty,
+            r.expItems, r.expQty, r.damageItems, r.damageQty,
+            r.shortageItems, r.shortageQty, r.arabicItems, r.arabicQty,
+            r.othersQty, r.othersNotes
+          ].map(v => (v ?? "").toString());
+          const inputs = Array.from(tr.querySelectorAll("input"));
+          inputs.forEach((inp, i) => { inp.value = values[i] || ""; });
+        });
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        showToast("Report loaded.");
+      }
+
+      function deleteReport(reportId) {
+        if (!confirm("Delete this saved report?")) return;
+        const reports = getStoredReports().filter(r => r.id !== reportId);
+        setStoredReports(reports);
+        showToast("Report deleted.");
+      }
+
+      function exportReports() {
+        const reports = getStoredReports();
+        const blob = new Blob([JSON.stringify(reports, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `reports-${toISODate(new Date())}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("Export downloaded.");
+      }
+
+      function importReports(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = e => {
+          try {
+            const imported = JSON.parse(e.target.result);
+            if (!Array.isArray(imported)) { showToast("Invalid reports file."); return; }
+            const existing = getStoredReports();
+            // merge by id (keep existing if same id)
+            const byId = new Map(existing.map(r => [r.id, r]));
+            imported.forEach(r => {
+              if (r && typeof r === "object" && r.id && !byId.has(r.id)) byId.set(r.id, r);
+            });
+            setStoredReports(Array.from(byId.values()));
+            showToast("Reports imported.");
+          } catch {
+            showToast("Error reading file.");
+          }
+        };
+        reader.readAsText(file);
+        event.target.value = "";
+      }
+
+      /* -------------------- REPORT GENERATION (for print) -------------------- */
+      function generateCombinedReport() {
+        const container = document.getElementById("combinedReports");
+        container.innerHTML = "";
+        const specialistsData = JSON.parse(localStorage.getItem("specialistsData")) || [];
+        if (!specialistsData.length) { showToast("No saved reports to generate."); return; }
+
+        specialistsData.forEach((spec, sIndex) => {
+          if (sIndex > 0) container.innerHTML += '<div class="page-break"></div>';
+          const pageDiv = document.createElement("div");
+          pageDiv.innerHTML = `<div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="header-info">
+  <p>Date: <span>${spec.date}</span></p>
+  <p class="editableStore">Store location: <span id="editableStore">${spec.store}</span></p>
+  <p class="specialistNamePlaceholder">Quality specialist: <span id="specialistNamePlaceholder">${spec.name}</span></p>
+</div>
+
+            <div class="text-center flex-grow-1">
+              <h6 class="fw-bold text-decoration-underline" style="font-size:13px; margin-top:10px;">
+                Daily report of checking goods received from suppliers
+              </h6>
+            </div>
+            <div class="text-end header-info">
+              <p>Makhazen Alenayah</p>
+              <p>Quality section</p>
+            </div>
+          </div>
+          <div class="page-number">Page ${spec.page}</div>
+          <table class="table table-bordered table-sm">
+            <thead>${document.querySelector("#reportTable thead").innerHTML}</thead>
+            <tbody></tbody>
+          </table>
+          <div class="signature"><span>Signature</span></div>`;
+          container.appendChild(pageDiv);
+          const tbody = pageDiv.querySelector("tbody");
+
+          (spec.suppliers || []).forEach((rowObj, idx) => {
+            // Backward compatibility: older saves may have arrays instead of objects.
+            const isArray = Array.isArray(rowObj);
+            const rowData = isArray ? rowObj : [
+              rowObj.supplierName, rowObj.supplierCode, rowObj.invoiceNumber, rowObj.invoiceItems, rowObj.invoiceQty,
+              rowObj.expItems, rowObj.expQty, rowObj.damageItems, rowObj.damageQty,
+              rowObj.shortageItems, rowObj.shortageQty, rowObj.arabicItems, rowObj.arabicQty,
+              rowObj.othersQty, rowObj.othersNotes
+            ];
+
+            const supplierName = (rowData[0] || "").toString().trim();
+            if (!supplierName) {
+              tbody.innerHTML += `<tr><td>${(spec.numbers || [])[idx] || ""}</td>` + rowData.map(() => `<td></td>`).join('') + `</tr>`;
+            } else {
+              const rowHTML = `<tr class="with-dash"><td>${(spec.numbers || [])[idx] || ""}</td>` +
+                rowData.map(v => (v ?? "").toString().trim() !== "" ? v : '-').map(v => `<td>${v}</td>`).join('') +
+                `</tr>`;
+              tbody.innerHTML += rowHTML;
+            }
+          });
+        });
+        showToast("Combined report generated (ready to print).");
+      }
+
+      /* -------------------- CLEAR ALL SPECIALISTS -------------------- */
+      function clearAllSpecialists() {
+        if (confirm("Clear ALL saved specialists’ reports?")) {
+          localStorage.removeItem("specialistsData");
+          clearTable();
+          document.getElementById("combinedReports").innerHTML = "";
+          resetNumbers();
+          refreshReportsTable();
+          showToast("All reports cleared.");
+        }
+      }
+
+      /* -------------------- Keyboard Navigation (Excel-like) -------------------- */
+      document.addEventListener('keydown', function (e) {
+        const active = document.activeElement;
+        if (active && active.tagName === 'INPUT' && active.closest('table')) {
+          const cell = active.closest('td');
+          const row = cell.parentElement;
+          const table = row.closest('table');
+          // index of the td among all cells (not counting colspans here; your table uses uniform cells in tbody)
+          const cellIndex = Array.from(row.children).indexOf(cell);
+          const rowIndex = Array.from(table.tBodies[0].rows).indexOf(row);
+          let targetInput = null;
+
+          // helper to find next input safely (skips cells without inputs)
+          function inputIn(rowEl, idx) {
+            const cellEl = rowEl && rowEl.cells[idx];
+            if (!cellEl) return null;
+            return cellEl.querySelector('input');
+          }
+
+          switch (e.key) {
+            case 'ArrowRight':
+              // look right until find an input or end
+              for (let i = cellIndex + 1; i < row.cells.length; i++) {
+                const cand = inputIn(row, i);
+                if (cand) { targetInput = cand; break; }
+              }
+              break;
+            case 'ArrowLeft':
+              for (let i = cellIndex - 1; i >= 0; i--) {
+                const cand = inputIn(row, i);
+                if (cand) { targetInput = cand; break; }
+              }
+              break;
+            case 'ArrowDown':
+              // same column index in next rows
+              for (let r = rowIndex + 1; r < table.tBodies[0].rows.length; r++) {
+                const cand = inputIn(table.tBodies[0].rows[r], cellIndex);
+                if (cand) { targetInput = cand; break; }
+              }
+              break;
+            case 'ArrowUp':
+              for (let r = rowIndex - 1; r >= 0; r--) {
+                const cand = inputIn(table.tBodies[0].rows[r], cellIndex);
+                if (cand) { targetInput = cand; break; }
+              }
+              break;
+          }
+
+          if (targetInput) {
+            targetInput.focus();
+            e.preventDefault();
+          }
+        }
+      });
+
+      /* -------------------- Initialize admin panel on load -------------------- */
+      refreshAdminPanel();
+
+      /* -------------------- Saved Reports Table -------------------- */
+      const reportsTableBody = document.getElementById("reportsTableBody");
+      const reportSearchInput = document.getElementById("reportSearchInput");
+      const savedReportsCount = document.getElementById("savedReportsCount");
+      const reportsEmptyState = document.getElementById("reportsEmptyState");
+
+      function suppliersPreview(spec) {
+        const rows = spec.suppliers || [];
+        const names = rows
+          .map(r => Array.isArray(r) ? (r[0] || "") : (r.supplierName || ""))
+          .map(s => String(s).trim())
+          .filter(Boolean);
+        return {
+          names,
+          extra: Math.max(0, names.length - 4),
+          top: names.slice(0, 4)
+        };
+      }
+
+      function refreshReportsTable() {
+        const reports = getStoredReports()
+          .slice()
+          .sort((a, b) => String(b.createdAt || "").localeCompare(String(a.createdAt || "")));
+
+        const q = (reportSearchInput.value || "").trim().toLowerCase();
+        const filtered = !q ? reports : reports.filter(r => {
+          const prev = suppliersPreview(r);
+          const blob = [
+            r.date, r.dateISO, r.store, r.name, prev.names.join(" ")
+          ].join(" ").toLowerCase();
+          return blob.includes(q);
+        });
+
+        savedReportsCount.innerText = `${filtered.length} report(s)`;
+        reportsTableBody.innerHTML = "";
+        if (reportsEmptyState) reportsEmptyState.style.display = filtered.length ? "none" : "block";
+        filtered.forEach(r => {
+          const tr = document.createElement("tr");
+          const created = r.createdAt ? new Date(r.createdAt).toLocaleString() : "—";
+          const prev = suppliersPreview(r);
+          const pills = (prev.top || []).map(n => `<span class="pill">${n}</span>`).join("") +
+            (prev.extra ? `<span class="pill secondary">+${prev.extra}</span>` : "");
+          tr.innerHTML = `
+            <td>${r.date || formatHumanDateFromISO(r.dateISO) || "—"}</td>
+            <td>${r.store || "—"}</td>
+            <td>${r.name || "—"}</td>
+            <td>${pills || "—"}</td>
+            <td>${created}</td>
+            <td>
+              <button class="btn btn-sm btn-primary me-1" onclick="loadReport('${r.id}')">Load</button>
+              <button class="btn btn-sm btn-outline-danger" onclick="deleteReport('${r.id}')">Delete</button>
+            </td>
+          `;
+          reportsTableBody.appendChild(tr);
+        });
+      }
+
+      reportSearchInput.addEventListener("input", refreshReportsTable);
+      refreshReportsTable();
+    </script>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3 no-print" style="z-index: 20000;">
+    <div id="appToast" class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="appToastBody">—</div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS (for toast) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
