@@ -293,6 +293,17 @@
       #combinedReports>div:last-child .page-break {
         display: none !important;
       }
+
+      /* Make numbers stand out in print */
+      .print-number {
+        font-weight: 800 !important;
+      }
+
+      /* Store location value: simple in print */
+      .header-info .store-location-value {
+        font-weight: 500 !important;
+        text-decoration: none !important;
+      }
     }
 
     /* Pakistan flag top-right */
@@ -320,15 +331,20 @@
 
     .header-info .editableStore {
       margin-top: 8px !important;
+      font-weight: 700;
     }
 
-    .header-info #editableStore {
+    /* Store location value (applies to header + generated print report) */
+    .header-info .store-location-value {
       margin-left: 8px !important;
       font-size: 19px;
-      font-family: "Reem Kufi Fun", sans-serif;
-      font-optical-sizing: auto;
-      font-weight: bold;
-      font-style: nl;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* Numbers: default (screen) */
+    .print-number {
+      font-weight: 700;
     }
 
 
@@ -395,12 +411,12 @@
         </div>
         <div class="input-group input-group-sm" style="width: 200px;">
           <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
-          <input id="storeInput" type="text" class="form-control" value="جدة" aria-label="Store location">
+          <input id="storeInput" type="text" class="form-control" value="جَدَّہ" aria-label="Store location">
         </div>
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-secondary" onclick="window.print()"><i class="bi bi-printer"></i> Print</button>
+        <button class="btn btn-secondary" onclick="printReport()"><i class="bi bi-printer"></i> Print</button>
       </div>
 
       <div class="btn-group">
@@ -493,7 +509,8 @@
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div class="header-info">
           <p>Date : <span id="editableDate" contenteditable="true"></span></p>
-          <p class="editableStore">Store location : <span id="editableStore" contenteditable="true">جدة</span></p>
+          <p class="editableStore">Store location : <span id="editableStore" class="store-location-value"
+              contenteditable="true">جَدَّہ</span></p>
           <p class="specialistNamePlaceholder">Quality specialist : <span id="specialistNamePlaceholder">—</span></p>
         </div>
 
@@ -600,7 +617,7 @@
       const now = new Date();
       reportDateInput.value = toISODate(now);
       editableDate.innerText = formatHumanDateFromISO(reportDateInput.value);
-      storeInput.value = (document.getElementById("editableStore").innerText || "جدة").trim();
+      storeInput.value = (document.getElementById("editableStore").innerText || "جَدَّہ").trim();
 
       reportDateInput.addEventListener("change", () => {
         editableDate.innerText = formatHumanDateFromISO(reportDateInput.value);
@@ -970,14 +987,41 @@
         const specialistsData = JSON.parse(localStorage.getItem("specialistsData")) || [];
         if (!specialistsData.length) { showToast("No saved reports to generate."); return; }
 
+        // Prefer the current on-screen store input when printing (so changes print immediately)
+        const currentStoreOverride = (document.getElementById("storeInput")?.value || "").trim();
+        const currentSpecialistOverride = (document.getElementById("specialistNameInput")?.value || "").trim();
+
+        // Escape any user-entered text before injecting into HTML
+        const escapeHtml = (s) => String(s ?? "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+
+        // "Numeric-like" (digits with common separators). Works with Arabic-Indic digits too.
+        const isNumericLike = (v) => {
+          const s = String(v ?? "").trim();
+          if (!s) return false;
+          return /^[\p{N}][\p{N}\s,،./-]*$/u.test(s);
+        };
+
+        const renderCellValue = (v) => {
+          const s = String(v ?? "").trim();
+          const safe = escapeHtml(s);
+          return isNumericLike(s) ? `<span class="print-number">${safe}</span>` : safe;
+        };
+
         specialistsData.forEach((spec, sIndex) => {
           if (sIndex > 0) container.innerHTML += '<div class="page-break"></div>';
           const pageDiv = document.createElement("div");
+          const storeForPrint = currentStoreOverride || (spec.store || "");
+          const specialistForPrint = currentSpecialistOverride || (spec.name || "");
           pageDiv.innerHTML = `<div class="d-flex justify-content-between align-items-start mb-2">
             <div class="header-info">
-  <p>Date: <span>${spec.date}</span></p>
-  <p class="editableStore">Store location: <span id="editableStore">${spec.store}</span></p>
-  <p class="specialistNamePlaceholder">Quality specialist: <span id="specialistNamePlaceholder">${spec.name}</span></p>
+  <p>Date: <span>${escapeHtml(spec.date)}</span></p>
+  <p class="editableStore">Store location: <span class="store-location-value">${escapeHtml(storeForPrint)}</span></p>
+  <p class="specialistNamePlaceholder">Quality specialist: <span id="specialistNamePlaceholder">${escapeHtml(specialistForPrint)}</span></p>
 </div>
 
             <div class="text-center flex-grow-1">
@@ -1011,10 +1055,16 @@
 
             const supplierName = (rowData[0] || "").toString().trim();
             if (!supplierName) {
-              tbody.innerHTML += `<tr><td>${(spec.numbers || [])[idx] || ""}</td>` + rowData.map(() => `<td></td>`).join('') + `</tr>`;
+              const n = (spec.numbers || [])[idx] || "";
+              tbody.innerHTML += `<tr><td>${n ? `<span class="print-number">${escapeHtml(n)}</span>` : ""}</td>` +
+                rowData.map(() => `<td></td>`).join('') + `</tr>`;
             } else {
-              const rowHTML = `<tr class="with-dash"><td>${(spec.numbers || [])[idx] || ""}</td>` +
-                rowData.map(v => (v ?? "").toString().trim() !== "" ? v : '-').map(v => `<td>${v}</td>`).join('') +
+              const n = (spec.numbers || [])[idx] || "";
+              const rowHTML = `<tr class="with-dash"><td>${n ? `<span class="print-number">${escapeHtml(n)}</span>` : ""}</td>` +
+                rowData
+                  .map(v => (v ?? "").toString().trim() !== "" ? v : "-")
+                  .map(v => `<td>${renderCellValue(v)}</td>`)
+                  .join("") +
                 `</tr>`;
               tbody.innerHTML += rowHTML;
             }
@@ -1022,6 +1072,22 @@
         });
         showToast("Combined report generated (ready to print).");
       }
+
+      // Print helper: always generate the printable view first
+      function printReport() {
+        generateCombinedReport();
+        // let DOM update before opening the print dialog
+        requestAnimationFrame(() => {
+          setTimeout(() => window.print(), 150);
+        });
+      }
+
+      // Also support Ctrl/Cmd+P: ensure printable content exists
+      window.addEventListener("beforeprint", () => {
+        const container = document.getElementById("combinedReports");
+        if (!container || (container.innerHTML || "").trim() !== "") return;
+        generateCombinedReport();
+      });
 
       /* -------------------- CLEAR ALL SPECIALISTS -------------------- */
       function clearAllSpecialists() {
