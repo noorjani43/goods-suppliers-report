@@ -314,25 +314,45 @@
         display: none !important;
       }
 
-      /* Keep entire page content together (header, table, signature) */
+      /* Keep entire page content together (header, table, signature) - Mobile fix */
       #combinedReports>div {
-        page-break-inside: avoid !important;
         display: block;
       }
 
-      /* Prevent page break after header */
-      #combinedReports>div>div:first-child {
-        page-break-after: avoid !important;
+      /* Main wrapper that keeps header, page number, table, and signature together - Mobile fix */
+      .print-page-content {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        -webkit-break-inside: avoid !important;
+        display: block;
+        min-height: 0;
       }
 
-      /* Prevent page break after page number */
+      /* Prevent page break after header - Mobile fix */
+      .print-page-content>div:first-child {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        -webkit-break-after: avoid !important;
+      }
+
+      /* Prevent page break after page number - Mobile fix */
       .page-number {
         page-break-after: avoid !important;
+        break-after: avoid !important;
+        -webkit-break-after: avoid !important;
+        page-break-before: avoid !important;
+        break-before: avoid !important;
+        -webkit-break-before: avoid !important;
       }
 
-      /* Keep table and signature wrapper together - prevent page breaks */
+      /* Prevent page break before table - Mobile fix */
       .table-signature-wrapper {
         page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        -webkit-break-inside: avoid !important;
+        page-break-before: avoid !important;
+        break-before: avoid !important;
+        -webkit-break-before: avoid !important;
         display: block;
       }
 
@@ -1096,30 +1116,32 @@
           const pageDiv = document.createElement("div");
           const storeForPrint = currentStoreOverride || (spec.store || "");
           const specialistForPrint = currentSpecialistOverride || (spec.name || "");
-          pageDiv.innerHTML = `<div class="d-flex justify-content-between align-items-start mb-2">
-            <div class="header-info">
+          pageDiv.innerHTML = `<div class="print-page-content">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div class="header-info">
   <p>Date: <span>${escapeHtml(spec.date)}</span></p>
   <p class="editableStore">Store location: <span class="store-location-value">${escapeHtml(storeForPrint)}</span></p>
   <p class="specialistNamePlaceholder">Quality specialist: <span id="specialistNamePlaceholder">${escapeHtml(specialistForPrint)}</span></p>
 </div>
 
-            <div class="text-center flex-grow-1">
-              <h6 class="fw-bold text-decoration-underline" style="font-size:13px; margin-top:10px;">
-                Daily report of checking goods received from suppliers
-              </h6>
+              <div class="text-center flex-grow-1">
+                <h6 class="fw-bold text-decoration-underline" style="font-size:13px; margin-top:10px;">
+                  Daily report of checking goods received from suppliers
+                </h6>
+              </div>
+              <div class="text-end header-info">
+                <p>Makhazen Alenayah</p>
+                <p>Quality section</p>
+              </div>
             </div>
-            <div class="text-end header-info">
-              <p>Makhazen Alenayah</p>
-              <p>Quality section</p>
+            <div class="page-number">Page ${spec.page}</div>
+            <div class="table-signature-wrapper">
+              <table class="table table-bordered table-sm">
+                <thead>${document.querySelector("#reportTable thead").innerHTML}</thead>
+                <tbody></tbody>
+              </table>
+              <div class="signature"><span>Signature</span></div>
             </div>
-          </div>
-          <div class="page-number">Page ${spec.page}</div>
-          <div class="table-signature-wrapper">
-            <table class="table table-bordered table-sm">
-              <thead>${document.querySelector("#reportTable thead").innerHTML}</thead>
-              <tbody></tbody>
-            </table>
-            <div class="signature"><span>Signature</span></div>
           </div>`;
           container.appendChild(pageDiv);
           const tbody = pageDiv.querySelector("tbody");
