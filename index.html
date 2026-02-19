@@ -314,6 +314,25 @@
         display: none !important;
       }
 
+      /* Keep table and signature wrapper together - prevent page breaks */
+      .table-signature-wrapper {
+        page-break-inside: avoid !important;
+        display: block;
+      }
+
+      /* Keep signature on same page as table - prevent it from breaking to next page */
+      .signature {
+        page-break-before: avoid !important;
+        page-break-inside: avoid !important;
+        margin-top: 20px !important;
+        /* More space for signing */
+      }
+
+      /* Keep table and signature together - prevent page break right after table */
+      .table-signature-wrapper table {
+        page-break-after: avoid !important;
+      }
+
       /* Make numbers stand out in print */
       .print-number {
         font-weight: 900 !important;
@@ -1079,11 +1098,13 @@
             </div>
           </div>
           <div class="page-number">Page ${spec.page}</div>
-          <table class="table table-bordered table-sm">
-            <thead>${document.querySelector("#reportTable thead").innerHTML}</thead>
-            <tbody></tbody>
-          </table>
-          <div class="signature"><span>Signature</span></div>`;
+          <div class="table-signature-wrapper">
+            <table class="table table-bordered table-sm">
+              <thead>${document.querySelector("#reportTable thead").innerHTML}</thead>
+              <tbody></tbody>
+            </table>
+            <div class="signature"><span>Signature</span></div>
+          </div>`;
           container.appendChild(pageDiv);
           const tbody = pageDiv.querySelector("tbody");
 
