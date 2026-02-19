@@ -359,14 +359,20 @@
       /* Keep signature on same page as table - prevent it from breaking to next page */
       .signature {
         page-break-before: avoid !important;
+        break-before: avoid !important;
+        -webkit-break-before: avoid !important;
         page-break-inside: avoid !important;
-        margin-top: 20px !important;
-        /* More space for signing */
+        break-inside: avoid !important;
+        -webkit-break-inside: avoid !important;
+        margin-top: 15px !important;
+        /* Reduced to help fit on same page */
       }
 
       /* Keep table and signature together - prevent page break right after table */
       .table-signature-wrapper table {
         page-break-after: avoid !important;
+        break-after: avoid !important;
+        -webkit-break-after: avoid !important;
       }
 
       /* Make numbers stand out in print */
