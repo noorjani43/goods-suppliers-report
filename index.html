@@ -314,6 +314,22 @@
         display: none !important;
       }
 
+      /* Keep entire page content together (header, table, signature) */
+      #combinedReports>div {
+        page-break-inside: avoid !important;
+        display: block;
+      }
+
+      /* Prevent page break after header */
+      #combinedReports>div>div:first-child {
+        page-break-after: avoid !important;
+      }
+
+      /* Prevent page break after page number */
+      .page-number {
+        page-break-after: avoid !important;
+      }
+
       /* Keep table and signature wrapper together - prevent page breaks */
       .table-signature-wrapper {
         page-break-inside: avoid !important;
