@@ -333,6 +333,8 @@
         page-break-after: avoid !important;
         break-after: avoid !important;
         -webkit-break-after: avoid !important;
+        margin-bottom: 5px !important;
+        /* Reduce header spacing */
       }
 
       /* Prevent page break after page number - Mobile fix */
@@ -343,6 +345,8 @@
         page-break-before: avoid !important;
         break-before: avoid !important;
         -webkit-break-before: avoid !important;
+        margin-bottom: 5px !important;
+        /* Reduce page number spacing */
       }
 
       /* Prevent page break before table - Mobile fix */
@@ -354,6 +358,8 @@
         break-before: avoid !important;
         -webkit-break-before: avoid !important;
         display: block;
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
       }
 
       /* Keep signature on same page as table - prevent it from breaking to next page */
@@ -364,12 +370,24 @@
         page-break-inside: avoid !important;
         break-inside: avoid !important;
         -webkit-break-inside: avoid !important;
-        margin-top: 15px !important;
-        /* Reduced to help fit on same page */
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        -webkit-break-after: avoid !important;
+        margin-top: 10px !important;
+        /* Further reduced for mobile */
+        margin-bottom: 0 !important;
       }
 
       /* Keep table and signature together - prevent page break right after table */
       .table-signature-wrapper table {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+        -webkit-break-after: avoid !important;
+        margin-bottom: 0 !important;
+      }
+
+      /* Reduce table row spacing to help fit signature */
+      .table-signature-wrapper table tbody tr:last-child {
         page-break-after: avoid !important;
         break-after: avoid !important;
         -webkit-break-after: avoid !important;
