@@ -87,6 +87,16 @@
       padding: 9.5px 3px !important;
     }
 
+    /* Supplier name: bold */
+    table td:nth-child(2) {
+      font-weight: 800 !important;
+    }
+
+    /* Supplier code: extra bold */
+    table td:nth-child(3) {
+      font-weight: 900 !important;
+    }
+
     table input {
       width: 100%;
       border: none;
@@ -95,6 +105,16 @@
       font-weight: 600;
       padding: 2px;
       background-color: transparent;
+    }
+
+    /* Supplier name input: bold */
+    table td:nth-child(2) input {
+      font-weight: 800 !important;
+    }
+
+    /* Supplier code input: extra bold */
+    table td:nth-child(3) input {
+      font-weight: 900 !important;
     }
 
     /* Small inputs (header toolbar) */
@@ -296,13 +316,37 @@
 
       /* Make numbers stand out in print */
       .print-number {
+        font-weight: 900 !important;
+      }
+
+      /* Supplier name: bold in print */
+      table td:nth-child(2) {
         font-weight: 800 !important;
       }
 
-      /* Store location value: simple in print */
+      /* Supplier code: extra bold in print */
+      table td:nth-child(3) {
+        font-weight: 900 !important;
+      }
+
+      /* Store location: bigger font in print (label + value) */
+      .header-info .editableStore {
+        font-size: 18px !important;
+      }
+
       .header-info .store-location-value {
         font-weight: 500 !important;
         text-decoration: none !important;
+        font-size: 24px !important;
+      }
+
+      /* Quality specialist: bigger font in print (label + value) */
+      .header-info .specialistNamePlaceholder {
+        font-size: 18px !important;
+      }
+
+      .header-info #specialistNamePlaceholder {
+        font-size: 20px !important;
       }
     }
 
@@ -344,7 +388,7 @@
 
     /* Numbers: default (screen) */
     .print-number {
-      font-weight: 700;
+      font-weight: 800;
     }
 
 
